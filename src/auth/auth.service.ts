@@ -14,4 +14,25 @@ export class AuthService {
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
   ) {}
+  async signUp(dto: AuthDto) {
+    const hashed = await bcrypt.hash(dto.password, 12);
+    try {
+      await this.prisma.user.create({
+        data: {
+          email: dto.email,
+          hashedPassword: hashed,
+        },
+      });
+      return {
+        message: 'ok',
+      };
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ForbiddenException('This email is already taken');
+        }
+      }
+      throw error;
+    }
+  }
 }
