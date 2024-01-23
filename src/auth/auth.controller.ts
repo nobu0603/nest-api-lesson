@@ -16,4 +16,9 @@ import { Csrf, Msg } from './interfaces/auth.interface';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Post('signup')
+  signUp(@Body() dto: AuthDto): Promise<Msg> {
+    return this.authService.signUp(dto);
+  }
 }
